@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Clipboard Memory</string>
+    <string name="notification_channel_name">Clipboard Monitor</string>
+    <string name="notification_channel_desc">Keeps clipboard monitoring active in the background</string>
+    <string name="service_notification_title">Clipboard Memory is active</string>
+    <string name="service_notification_text">Saving everything you copy</string>
+</resources>
