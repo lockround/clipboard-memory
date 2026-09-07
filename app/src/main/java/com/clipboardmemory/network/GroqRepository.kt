@@ -1,6 +1,7 @@
 package com.clipboardmemory.network
 
 import com.clipboardmemory.data.ClipboardDatabase
+import com.google.gson.JsonParser
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -34,9 +35,27 @@ class GroqRepository(
             authorization = "Bearer $apiKey",
             request = ChatRequest(model = model, messages = messages)
         )
-        response.error?.let { throw GroqApiException(it.message ?: "Unknown API error") }
-        val content = response.choices.firstOrNull()?.message?.content
-        return content ?: throw GroqApiException("Empty response from Groq")
+
+        if (!response.isSuccessful) {
+            val serverMessage = response.errorBody()?.string()?.let { parseGroqError(it) }
+            throw GroqApiException(
+                serverMessage ?: "HTTP ${response.code()}"
+            )
+        }
+
+        val body = response.body()
+        body?.error?.let { throw GroqApiException(it.message ?: "Unknown API error") }
+
+        val content = body?.choices?.firstOrNull()?.message?.content
+        return content?.takeIf { it.isNotBlank() }
+            ?: throw GroqApiException("Empty response from Groq (model returned no content)")
+    }
+
+    private fun parseGroqError(raw: String): String? = try {
+        val obj = JsonParser.parseString(raw).asJsonObject
+        obj.getAsJsonObject("error")?.get("message")?.asString?.takeIf { it.isNotBlank() }
+    } catch (_: Exception) {
+        null
     }
 }
 

@@ -54,7 +54,13 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         _hasApiKey.value = key.isNotBlank()
     }
 
+    fun setModel(model: String) {
+        if (model.isNotBlank()) Preferences.setModel(app, model.trim())
+    }
+
     fun getApiKey(): String = Preferences.getApiKey(app)
+
+    fun getModel(): String = Preferences.getModel(app)
 
     fun sendMessage() {
         val text = _inputText.value.trim()

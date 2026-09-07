@@ -2,6 +2,7 @@ package com.clipboardmemory.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -14,7 +15,7 @@ interface GroqApiService {
     suspend fun chatCompletion(
         @Header("Authorization") authorization: String,
         @Body request: ChatRequest
-    ): GroqResponse
+    ): Response<GroqResponse>
 
     companion object {
         private const val BASE_URL = "https://api.groq.com/openai/v1/"

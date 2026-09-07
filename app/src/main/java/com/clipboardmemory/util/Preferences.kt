@@ -9,7 +9,7 @@ object Preferences {
     private const val KEY_SERVICE_ENABLED = "service_enabled"
     const val KEY_SERVICE_RUNNING = "service_running"
 
-    const val DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
+    const val DEFAULT_GROQ_MODEL = "qwen/qwen3.8-27b"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

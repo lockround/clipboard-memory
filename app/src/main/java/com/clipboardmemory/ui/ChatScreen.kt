@@ -149,9 +149,11 @@ fun ChatScreen(
     if (showApiKeyDialog) {
         ApiKeyDialog(
             currentKey = viewModel.getApiKey(),
+            currentModel = viewModel.getModel(),
             onDismiss = { showApiKeyDialog = false },
-            onSave = { key ->
+            onSave = { key, model ->
                 viewModel.setApiKey(key)
+                viewModel.setModel(model)
                 showApiKeyDialog = false
             }
         )
@@ -227,14 +229,16 @@ private fun MessageBubble(message: ChatMessage) {
 @Composable
 private fun ApiKeyDialog(
     currentKey: String,
+    currentModel: String,
     onDismiss: () -> Unit,
-    onSave: (String) -> Unit
+    onSave: (String, String) -> Unit
 ) {
     var key by remember { mutableStateOf(currentKey) }
+    var model by remember { mutableStateOf(currentModel) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Groq API Key") },
+        title = { Text("Groq Settings") },
         text = {
             Column {
                 Text(
@@ -249,12 +253,22 @@ private fun ApiKeyDialog(
                     label = { Text("API Key (gsk_...)") },
                     singleLine = true
                 )
+                Spacer(Modifier.padding(top = 8.dp))
+                OutlinedTextField(
+                    value = model,
+                    onValueChange = { model = it },
+                    label = { Text("Model") },
+                    supportingText = {
+                        Text("Check available models at console.groq.com")
+                    },
+                    singleLine = true
+                )
             }
         },
         confirmButton = {
             TextButton(
-                onClick = { onSave(key.trim()) },
-                enabled = key.trim().isNotEmpty()
+                onClick = { onSave(key.trim(), model.trim()) },
+                enabled = key.trim().isNotEmpty() && model.trim().isNotEmpty()
             ) { Text("Save") }
         },
         dismissButton = {
