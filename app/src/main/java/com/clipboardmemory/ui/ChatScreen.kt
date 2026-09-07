@@ -39,10 +39,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.clipboardmemory.network.ChatMessage
+import com.mikepenz.markdown.compose.Markdown
+import com.mikepenz.markdown.model.DefaultMarkdownColors
+import com.mikepenz.markdown.model.DefaultMarkdownTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -209,20 +216,64 @@ private fun MessageBubble(message: ChatMessage) {
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
-            Text(
-                text = message.content,
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (isUser) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-                modifier = Modifier
-                    .padding(horizontal = 14.dp, vertical = 10.dp)
-                    .widthIn(max = 320.dp)
-            )
+            if (isUser) {
+                Text(
+                    text = message.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                        .widthIn(max = 320.dp)
+                )
+            } else {
+                AssistantMarkdownContent(message.content)
+            }
         }
     }
+}
+
+@Composable
+private fun AssistantMarkdownContent(content: String) {
+    val scheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+
+    val colors = DefaultMarkdownColors(
+        text = scheme.onSurfaceVariant,
+        codeText = scheme.onSurfaceVariant,
+        inlineCodeText = scheme.primary,
+        linkText = scheme.primary,
+        codeBackground = scheme.surfaceVariant.copy(alpha = 0.6f),
+        inlineCodeBackground = scheme.surfaceVariant.copy(alpha = 0.6f),
+        dividerColor = scheme.outlineVariant
+    )
+
+    val markdownTypography = DefaultMarkdownTypography(
+        h1 = typography.headlineMedium,
+        h2 = typography.headlineSmall,
+        h3 = typography.titleLarge,
+        h4 = typography.titleMedium,
+        h5 = typography.titleMedium,
+        h6 = typography.titleMedium,
+        text = typography.bodyMedium,
+        code = typography.bodyMedium.copy(
+            fontFamily = FontFamily.Monospace,
+            fontSize = 13.sp
+        ),
+        quote = typography.bodyMedium.copy(fontStyle = FontStyle.Italic),
+        paragraph = typography.bodyMedium,
+        ordered = typography.bodyMedium,
+        bullet = typography.bodyMedium,
+        list = typography.bodyMedium
+    )
+
+    Markdown(
+        content = content,
+        colors = colors,
+        typography = markdownTypography,
+        modifier = Modifier
+            .widthIn(max = 360.dp)
+            .padding(horizontal = 14.dp, vertical = 10.dp)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
